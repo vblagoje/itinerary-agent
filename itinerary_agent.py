@@ -82,7 +82,27 @@
 
 # ---
 
-# ### 🕵️ Step 4: Available Tools
+# ### ✍️ Step 4: Populate User Preferences (One-time Setup)
+
+# For the agent to personalize itineraries, you need to store your preferences in Qdrant.
+# 1. **Generate Preferences:** Think about your travel style, likes, dislikes, food preferences,
+#    dietary restrictions, preferred activities (e.g., museums, nightlife, relaxation),
+#    budget considerations, etc. You can use an LLM like ChatGPT to help you formulate
+#    these into a descriptive paragraph or a list.
+#    *Example:* "I love trying local street food but avoid spicy dishes. Prefer boutique hotels
+#    over large chains. Enjoy walking tours and visiting historical sites. Not interested in
+#    nightclubs. My budget is mid-range. I need a good espresso in the morning."
+# 2. **Store Preferences:** Use an MCP client tool (like the MCP Inspector,
+#    Cursor if it has MCP integration, or another IDE/tool supporting MCP) connected to
+#    your Qdrant MCP server (running on port 8102 based on previous steps).
+#    - Invoke the `qdrant-store` tool.
+#    - Paste your generated preferences string into the `information` field.
+#      if needed, but it's not strictly necessary for this example.
+#    - Execute the call. This only needs to be done once or whenever your preferences change.
+
+# ---
+
+# ### 🕵️ Step 5: Available Tools
 
 # The agent has access to:
 # - Maps tools: geocoding, place search, directions, etc.
@@ -92,7 +112,7 @@
 
 # ---
 
-# ### ▶️ Step 5: Run the Python Script
+# ### ▶️ Step 6: Run the Python Script
 
 # Example query:
 # > "Create a personalized day plan in Amsterdam tomorrow:
