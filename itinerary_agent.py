@@ -44,7 +44,7 @@
 #   mcp-server-qdrant
 # ```
 
-# 4. Set BRAVE_API_KEY as we will use Brave Search via MCP Stdio Server directly
+# 4. Set BRAVE_API_KEY as we will use Brave Search via MCP Stdio Server directly via stdio
 # export BRAVE_API_KEY="your_brave_api_key"
 # ---
 
@@ -65,9 +65,24 @@
 #    You can get the keys from your Langfuse project settings.
 #    Setting `HAYSTACK_CONTENT_TRACING_ENABLED` to `true` ensures Haystack tracing is enabled.
 
+# ### 🔑 Step 3: Configure LLM Credentials
+
+# This script uses either OpenAI or AWS Bedrock for the LLM.
+# You need to configure the appropriate credentials as environment variables:
+
+# - For OpenAI (`OpenAIChatGenerator`):
+#   ```bash
+#   export OPENAI_API_KEY="your-openai-api-key"
+#   ```
+
+# - For AWS Bedrock (`AmazonBedrockChatGenerator`):
+#   Ensure your AWS credentials are configured (e.g., via environment variables
+#   `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` or an IAM role).
+#   Refer to AWS documentation for credential configuration.
+
 # ---
 
-# ### 🕵️ Step 3: Available Tools
+# ### 🕵️ Step 4: Available Tools
 
 # The agent has access to:
 # - Maps tools: geocoding, place search, directions, etc.
@@ -77,7 +92,7 @@
 
 # ---
 
-# ### ▶️ Step 4: Run the Python Script
+# ### ▶️ Step 5: Run the Python Script
 
 # Example query:
 # > "Create a personalized day plan in Amsterdam tomorrow:
