@@ -58,7 +58,7 @@ This project demonstrates a personalized travel itinerary agent built using [Hay
     For personalized results, store your preferences in the Qdrant database:
     *   **Generate:** Create a text description of your travel style, likes, dislikes, food preferences, budget, etc.
         *Example:* "Loves local cafes with good espresso, enjoys art galleries and walking tours. Mid-range budget. Prefers Italian or Thai food. Not interested in nightlife."
-    *   **Store:** Use an MCP client tool (like the [MCP Inspector](https://marketplace.visualstudio.com/items?itemName=MCPInspector.mcp-inspector-vscode) VS Code extension, Cursor, or another tool) connected to the Qdrant MCP server (running at `http://localhost:8102` by default).
+    *   **Store:** Use an MCP client tool (like the [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) VS Code extension, Cursor, or another tool) connected to the Qdrant MCP server (running at `http://localhost:8102` by default).
         *   Invoke the `qdrant-store` tool.
         *   Paste your preferences text into the `information` field.
         *   Execute the call.
