@@ -3,86 +3,70 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ### Overview
-# This script shows how to use multiple MCP Servers in combination with the **Haystack Agent**
-# and **OpenAI's Chat Generator** to create comprehensive travel itineraries.
+# This script shows how to use multiple MCP Servers (managed via docker-compose)
+# in combination with the **Haystack Agent** and **OpenAI's Chat Generator**
+# to create comprehensive travel itineraries.
 # It combines:
 # - Google Maps for location search and navigation
 # - Weather data for activity planning
-# - User preferences storage for personalization
+# - User preferences storage for personalization (using Qdrant)
 # - Brave Search for additional context and information
 # - A system message to guide the agent's behavior and capabilities
 
 # ---
 
-# ### 🔧 Step 1: Start the Required MCP Servers
+# ### ⚙️ Step 1: Configuration & Prerequisites
 
-# 1. Google Maps MCP Server (port 8100):
-# ```bash
-# docker run -it --rm -p 8100:8100 \
-#   -e GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY \
-#   supercorp/supergateway \
-#   --stdio "npx -y @modelcontextprotocol/server-google-maps" \
-#   --port 8100
-# ```
+# 1.  **Install Dependencies:**
+#     ```bash
+#     pip install -r requirements.txt
+#     ```
 
-# 2. Weather MCP Server (port 8101):
-# ```bash
-# docker run -it --rm -p 8101:8101 \
-#   -e OPENWEATHER_API_KEY=$OPENWEATHER_API_KEY \
-#   supercorp/supergateway \
-#   --stdio "npx -y @vblagoje/openweather-mcp" \
-#   --port 8101
-# ```
+# 2.  **Set Environment Variables:**
+#     Create a `.env` file in the project root directory (where `docker-compose.yml` is)
+#     or export these variables in your shell before running `docker-compose up` or the script.
 
-# 3. Qdrant MCP Server for preferences (port 8102):
-# ```bash
-# docker run -p 8102:8000 \
-#   -e QDRANT_URL="Your Qdrant URL remote or local" \
-#   -e QDRANT_API_KEY="<your-qdrant-api-key>" \
-#   -e COLLECTION_NAME="user-preferences" \
-#   -e TOOL_FIND_DESCRIPTION="Search for user's stored preferences and personal information including food preferences, favorite activities, travel style, dietary restrictions, and general likes/dislikes" \
-#   mcp-server-qdrant
-# ```
+#     **Required:**
+#     - `GOOGLE_MAPS_API_KEY`: Your Google Maps API key. Get one from the Google Cloud Console:
+#       https://console.cloud.google.com/google/maps-apis/overview
+#       Ensure you have enabled the "Geocoding API", "Places API", and "Directions API".
+#     - `OPENWEATHER_API_KEY`: Your OpenWeatherMap API key. Get one from:
+#       https://openweathermap.org/appid
+#     - `BRAVE_API_KEY`: Your Brave Search API key. Get one from:
+#       https://brave.com/search/api/
+#     - `OPENAI_API_KEY`: Your OpenAI API key (if using `OpenAIChatGenerator`). Get one from:
+#       https://platform.openai.com/api-keys
+#       *Alternatively, if using `AmazonBedrockChatGenerator`, ensure your AWS credentials
+#       are configured (e.g., via `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`
+#       or an IAM role).* Refer to AWS documentation.
 
-# 4. Set BRAVE_API_KEY as we will use Brave Search via MCP Stdio Server directly via stdio
-# export BRAVE_API_KEY="your_brave_api_key"
-# ---
+#     **For Qdrant (if using a Cloud Instance):**
+#     *(Note: The default docker-compose likely runs a local Qdrant instance, requiring no extra env vars.
+#     Only set these if you modify docker-compose to use a cloud Qdrant.)*
+#     - `QDRANT_URL`: The URL of your Qdrant Cloud instance.
+#     - `QDRANT_API_KEY`: The API key for your Qdrant Cloud instance.
 
-# ### ⚙️ Step 2: Configure Langfuse Tracing (Optional)
-
-# To enable tracing with Langfuse:
-# 1. Install the Langfuse Haystack integration:
-#    ```bash
-#    pip install langfuse-haystack
-#    ```
-# 2. Set the following environment variables BEFORE running the script:
-#    ```bash
-#    export LANGFUSE_SECRET_KEY="your-langfuse-secret-key"
-#    export LANGFUSE_PUBLIC_KEY="your-langfuse-public-key"
-#    export HAYSTACK_CONTENT_TRACING_ENABLED="true"
-#    export LANGFUSE_HOST=https://us.cloud.langfuse.com or another host where your Langfuse project is hosted
-#    ```
-#    You can get the keys from your Langfuse project settings.
-#    Setting `HAYSTACK_CONTENT_TRACING_ENABLED` to `true` ensures Haystack tracing is enabled.
-
-# ### 🔑 Step 3: Configure LLM Credentials
-
-# This script uses either OpenAI or AWS Bedrock for the LLM.
-# You need to configure the appropriate credentials as environment variables:
-
-# - For OpenAI (`OpenAIChatGenerator`):
-#   ```bash
-#   export OPENAI_API_KEY="your-openai-api-key"
-#   ```
-
-# - For AWS Bedrock (`AmazonBedrockChatGenerator`):
-#   Ensure your AWS credentials are configured (e.g., via environment variables
-#   `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` or an IAM role).
-#   Refer to AWS documentation for credential configuration.
+#     **Optional (for Langfuse Tracing):**
+#     - `LANGFUSE_SECRET_KEY`: Your Langfuse Secret Key.
+#     - `LANGFUSE_PUBLIC_KEY`: Your Langfuse Public Key.
+#     - `LANGFUSE_HOST`: The host URL for your Langfuse instance (e.g., https://cloud.langfuse.com).
+#     - `HAYSTACK_CONTENT_TRACING_ENABLED=true`: Set to enable detailed Haystack tracing.
+#       Get keys and host from your Langfuse project settings.
 
 # ---
 
-# ### ✍️ Step 4: Populate User Preferences (One-time Setup)
+# ### 🐳 Step 2: Start Services with Docker Compose
+
+# Run the following command from the project root directory:
+# ```bash
+# docker-compose up -d
+# ```
+# This will start the Google Maps, Weather, Qdrant, and Brave Search MCP servers
+# based on the configuration in `docker-compose.yml`.
+
+# ---
+
+# ### ✍️ Step 3: Populate User Preferences (One-time Setup)
 
 # For the agent to personalize itineraries, you need to store your preferences in Qdrant.
 # 1. **Generate Preferences:** Think about your travel style, likes, dislikes, food preferences,
@@ -92,42 +76,35 @@
 #    *Example:* "I love trying local street food but avoid spicy dishes. Prefer boutique hotels
 #    over large chains. Enjoy walking tours and visiting historical sites. Not interested in
 #    nightclubs. My budget is mid-range. I need a good espresso in the morning."
+# Example: I used ChatGPT to generate my travel preferences by asking:
+# "Based on everything we've discussed, could you create a comprehensive travel preferences
+# profile for me that I can use with a travel planning system? Include my style, interests,
+# budget level, and any restrictions."
+
 # 2. **Store Preferences:** Use an MCP client tool (like the MCP Inspector,
 #    Cursor if it has MCP integration, or another IDE/tool supporting MCP) connected to
-#    your Qdrant MCP server (running on port 8102 based on previous steps).
+#    your Qdrant MCP server (running on port 8102 by default in docker-compose).
 #    - Invoke the `qdrant-store` tool.
 #    - Paste your generated preferences string into the `information` field.
-#      if needed, but it's not strictly necessary for this example.
 #    - Execute the call. This only needs to be done once or whenever your preferences change.
 
 # ---
 
-# ### 🕵️ Step 5: Available Tools
+# ### ▶️ Step 4: Run the Python Script
 
-# The agent has access to:
-# - Maps tools: geocoding, place search, directions, etc.
-# - Weather tools: current and forecast weather
-# - Preferences: store and retrieve user preferences
-# - Brave Search: for additional context and real-time information
+# Execute the script:
+# ```bash
+# python itinerary_agent.py
+# ```
+# The agent will use the running MCP services and your configured LLM to generate the itinerary.
 
-# ---
+# --- Example Query (inside the script):
+# Create a personalized day plan in Munich, Germany tomorrow:
+# - Must include: morning coffee (must have espresso), Italian lunch spot, afternoon coffee for people watching
+# - Include museums and art galleries if rainy
+# - Keep everything walking distance within one neighborhood
 
-# ### ▶️ Step 6: Run the Python Script
-
-# Example query:
-# > "Create a personalized day plan in Amsterdam tomorrow:
-# > - Must include: morning coffee (must have cortado coffee), italian lunch spot, afternoon coffee for people watching
-# > - Include museums and art galleries if rainy
-# > - Keep everything walking distance within one neighborhood"
-
-import os
 import pathlib
-
-# Set Langfuse environment variables if they are present
-# NOTE: It's recommended to set these in your shell environment rather than directly in the code.
-# os.environ["LANGFUSE_SECRET_KEY"] = "your-langfuse-secret-key" # Uncomment and replace if setting here
-# os.environ["LANGFUSE_PUBLIC_KEY"] = "your-langfuse-public-key" # Uncomment and replace if setting here
-# os.environ["HAYSTACK_CONTENT_TRACING_ENABLED"] = "true" # Set to true to enable detailed tracing
 
 # Import Haystack components *after* setting environment variables
 from haystack.components.agents import Agent
@@ -141,7 +118,7 @@ from haystack_integrations.components.connectors.langfuse.langfuse_connector imp
 from haystack_integrations.components.generators.amazon_bedrock.chat.chat_generator import (
     AmazonBedrockChatGenerator,
 )
-from haystack_integrations.tools.mcp.mcp_tool import SSEServerInfo, StdioServerInfo
+from haystack_integrations.tools.mcp.mcp_tool import SSEServerInfo
 from haystack_integrations.tools.mcp.mcp_toolset import MCPToolset
 
 
@@ -156,11 +133,8 @@ def load_system_message():
 def main():
 
     # Initialize LangfuseConnector - it will be active if environment variables are set
+    # if you don't want to use Langfuse, just comment out the following line
     tracer = LangfuseConnector("Agent itinerary")
-
-    # Optionally, you can use Langfuse to trace the agent's activity but it needs
-    # additional configuration.
-    # See [Langfuse integration](https://github.com/deepset-ai/haystack-core-integrations/tree/main/integrations/langfuse) for more information.
 
     # Create toolsets for each service
     maps_toolset = MCPToolset(
@@ -179,11 +153,7 @@ def main():
 
     # Add Brave Search toolset
     brave_search_toolset = MCPToolset(
-        StdioServerInfo(
-            command="docker",
-            args=["run", "-i", "--rm", "-e", "BRAVE_API_KEY", "mcp/brave-search"],
-            env={"BRAVE_API_KEY": os.environ.get("BRAVE_API_KEY")},
-        ),
+        SSEServerInfo(base_url="http://localhost:8103"),
         tool_names=["brave_web_search"],
     )
 
@@ -204,19 +174,18 @@ def main():
     )
 
     # Example query for creating a personalized itinerary
-    result = agent.run(
+    agent.run(
         messages=[
             ChatMessage.from_user(
                 text="""
-                                  Create a personalized day plan in Bangalore, India tomorrow:
-                                  - Must include: morning coffee (must have espresso), Indian fusion lunch spot, afternoon coffee for people watching
+                                  Create a personalized day plan in Munich, Germany tomorrow:
+                                  - Must include: morning coffee (must have espresso), Italian lunch spot, afternoon coffee for people watching
                                   - Include museums and art galleries if rainy
                                   - Keep everything walking distance within one neighborhood
                                   """
             )
         ]
     )
-    # print(result["messages"][-1].text)
 
 
 if __name__ == "__main__":
