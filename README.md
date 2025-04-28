@@ -19,11 +19,17 @@ This project demonstrates a personalized travel itinerary agent built using [Hay
 
 1.  **Clone the Repository (if you haven't already):**
     ```bash
-    git clone <repository-url>
-    cd <repository-directory>
+    git clone https://github.com/vblagoje/itinerary-agent.git
+    cd itinerary-agent
     ```
 
 2.  **Install Python Dependencies:**
+    *It's highly recommended to create and activate a virtual environment first:* 
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    ```
+    *Then, install the required packages:*
     ```bash
     pip install -r requirements.txt
     ```
@@ -50,7 +56,7 @@ This project demonstrates a personalized travel itinerary agent built using [Hay
 4.  **Start MCP Services:**
     Run the following command from the project root:
     ```bash
-    docker-compose up -d
+    docker-compose up
     ```
     This starts the Google Maps, Weather, Qdrant, and Brave Search MCP servers defined in `docker-compose.yml`.
 
@@ -58,7 +64,7 @@ This project demonstrates a personalized travel itinerary agent built using [Hay
     For personalized results, store your preferences in the Qdrant database:
     *   **Generate:** Create a text description of your travel style, likes, dislikes, food preferences, budget, etc.
         *Example:* "Loves local cafes with good espresso, enjoys art galleries and walking tours. Mid-range budget. Prefers Italian or Thai food. Not interested in nightlife."
-    *   **Store:** Use an MCP client tool (like the [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) VS Code extension, Cursor, or another tool) connected to the Qdrant MCP server (running at `http://localhost:8102` by default).
+    *   **Store:** Use an MCP client tool (like the [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector), Cursor, or another tool) connected to the Qdrant MCP server (running at `http://localhost:8102` by default).
         *   Invoke the `qdrant-store` tool.
         *   Paste your preferences text into the `information` field.
         *   Execute the call.
