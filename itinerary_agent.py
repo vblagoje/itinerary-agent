@@ -2,107 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-### Overview
-# This script shows how to use multiple MCP Servers (managed via docker-compose)
-# in combination with the **Haystack Agent** and **OpenAI's Chat Generator**
-# to create comprehensive travel itineraries.
-# It combines:
-# - Google Maps for location search and navigation
-# - Weather data for activity planning
-# - User preferences storage for personalization (using Qdrant)
-# - Brave Search for additional context and information
-# - A system message to guide the agent's behavior and capabilities
-
-# ---
-
-# ### ⚙️ Step 1: Configuration & Prerequisites
-
-# 1.  **Install Dependencies:**
-#     ```bash
-#     pip install -r requirements.txt
-#     ```
-
-# 2.  **Set Environment Variables:**
-#     Create a `.env` file in the project root directory (where `docker-compose.yml` is)
-#     or export these variables in your shell before running `docker-compose up` or the script.
-
-#     **Required:**
-#     - `GOOGLE_MAPS_API_KEY`: Your Google Maps API key. Get one from the Google Cloud Console:
-#       https://console.cloud.google.com/google/maps-apis/overview
-#       Ensure you have enabled the "Geocoding API", "Places API", and "Directions API".
-#     - `OPENWEATHER_API_KEY`: Your OpenWeatherMap API key. Get one from:
-#       https://openweathermap.org/appid
-#     - `BRAVE_API_KEY`: Your Brave Search API key. Get one from:
-#       https://brave.com/search/api/
-#     - `OPENAI_API_KEY`: Your OpenAI API key (if using `OpenAIChatGenerator`). Get one from:
-#       https://platform.openai.com/api-keys
-#       *Alternatively, if using `AmazonBedrockChatGenerator`, ensure your AWS credentials
-#       are configured (e.g., via `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`
-#       or an IAM role).* Refer to AWS documentation.
-
-#     **For Qdrant (if using a Cloud Instance):**
-#     *(Note: The default docker-compose likely runs a local Qdrant instance, requiring no extra env vars.
-#     Only set these if you modify docker-compose to use a cloud Qdrant.)*
-#     - `QDRANT_URL`: The URL of your Qdrant Cloud instance.
-#     - `QDRANT_API_KEY`: The API key for your Qdrant Cloud instance.
-
-#     **Optional (for Langfuse Tracing):**
-#     - `LANGFUSE_SECRET_KEY`: Your Langfuse Secret Key.
-#     - `LANGFUSE_PUBLIC_KEY`: Your Langfuse Public Key.
-#     - `LANGFUSE_HOST`: The host URL for your Langfuse instance (e.g., https://cloud.langfuse.com).
-#     - `HAYSTACK_CONTENT_TRACING_ENABLED=true`: Set to enable detailed Haystack tracing.
-#       Get keys and host from your Langfuse project settings.
-
-# ---
-
-# ### 🐳 Step 2: Start Services with Docker Compose
-
-# Run the following command from the project root directory:
-# ```bash
-# docker-compose up -d
-# ```
-# This will start the Google Maps, Weather, Qdrant, and Brave Search MCP servers
-# based on the configuration in `docker-compose.yml`.
-
-# ---
-
-# ### ✍️ Step 3: Populate User Preferences (One-time Setup)
-
-# For the agent to personalize itineraries, you need to store your preferences in Qdrant.
-# 1. **Generate Preferences:** Think about your travel style, likes, dislikes, food preferences,
-#    dietary restrictions, preferred activities (e.g., museums, nightlife, relaxation),
-#    budget considerations, etc. You can use an LLM like ChatGPT to help you formulate
-#    these into a descriptive paragraph or a list.
-#    *Example:* "I love trying local street food but avoid spicy dishes. Prefer boutique hotels
-#    over large chains. Enjoy walking tours and visiting historical sites. Not interested in
-#    nightclubs. My budget is mid-range. I need a good espresso in the morning."
-# Example: I used ChatGPT to generate my travel preferences by asking:
-# "Based on everything we've discussed, could you create a comprehensive travel preferences
-# profile for me that I can use with a travel planning system? Include my style, interests,
-# budget level, and any restrictions."
-
-# 2. **Store Preferences:** Use an MCP client tool (like the MCP Inspector,
-#    Cursor if it has MCP integration, or another IDE/tool supporting MCP) connected to
-#    your Qdrant MCP server (running on port 8102 by default in docker-compose).
-#    - Invoke the `qdrant-store` tool.
-#    - Paste your generated preferences string into the `information` field.
-#    - Execute the call. This only needs to be done once or whenever your preferences change.
-
-# ---
-
-# ### ▶️ Step 4: Run the Python Script
-
-# Execute the script:
-# ```bash
-# python itinerary_agent.py
-# ```
-# The agent will use the running MCP services and your configured LLM to generate the itinerary.
-
-# --- Example Query (inside the script):
-# Create a personalized day plan in Munich, Germany tomorrow:
-# - Must include: morning coffee (must have espresso), Italian lunch spot, afternoon coffee for people watching
-# - Include museums and art galleries if rainy
-# - Keep everything walking distance within one neighborhood
+# Overview: This script runs a Haystack agent that uses MCP tools to create personalized itineraries.
 
 import pathlib
 
@@ -178,11 +78,11 @@ def main():
         messages=[
             ChatMessage.from_user(
                 text="""
-                                  Create a personalized day plan in Munich, Germany tomorrow:
-                                  - Must include: morning coffee (must have espresso), Italian lunch spot, afternoon coffee for people watching
-                                  - Include museums and art galleries if rainy
-                                  - Keep everything walking distance within one neighborhood
-                                  """
+                    Create a personalized day plan in Munich, Germany tomorrow:
+                    - Must include: morning coffee (must have espresso), Italian lunch spot, afternoon coffee for people watching
+                    - Include museums and art galleries if rainy
+                    - Keep everything walking distance within one neighborhood
+                    """
             )
         ]
     )
