@@ -65,7 +65,7 @@ def main():
     # Create the agent with all tools and system message
 
     # llm = AmazonBedrockChatGenerator(model="anthropic.claude-3-5-sonnet-20240620-v1:0")
-    llm = OpenAIChatGenerator(model="gpt-4.1", tools=all_tools)
+    llm = OpenAIChatGenerator(model="gpt-4.1")
     agent = Agent(
         system_prompt=load_system_message(),
         chat_generator=llm,
