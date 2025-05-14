@@ -40,22 +40,22 @@ def main():
 
     # Create toolsets for each service
     maps_toolset = MCPToolset(
-        SSEServerInfo(base_url="http://localhost:8100"),
+        SSEServerInfo(url="http://localhost:8100/sse"),
         tool_names=["maps_geocode", "maps_search_places", "maps_place_details"],
     )
 
     weather_toolset = MCPToolset(
-        SSEServerInfo(base_url="http://localhost:8101"),
+        SSEServerInfo(url="http://localhost:8101/sse"),
         tool_names=[
             "get_weather_forecast",
         ],
     )
 
-    preferences_toolset = MCPToolset(SSEServerInfo(base_url="http://localhost:8102"))
+    preferences_toolset = MCPToolset(SSEServerInfo(url="http://localhost:8102/sse"))
 
     # Add Brave Search toolset
     brave_search_toolset = MCPToolset(
-        SSEServerInfo(base_url="http://localhost:8103"),
+        SSEServerInfo(url="http://localhost:8103/sse"),
         tool_names=["brave_web_search"],
     )
 
@@ -66,8 +66,8 @@ def main():
 
     # Create the agent with all tools and system message
 
-    llm = AmazonBedrockChatGenerator(model="anthropic.claude-3-5-sonnet-20240620-v1:0")
-    # llm = OpenAIChatGenerator(model="gpt-4.1")
+    # llm = AmazonBedrockChatGenerator(model="anthropic.claude-3-5-sonnet-20240620-v1:0")
+    llm = OpenAIChatGenerator(model="gpt-4.1")
     agent = Agent(
         system_prompt=load_system_message(),
         chat_generator=llm,
