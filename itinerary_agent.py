@@ -31,6 +31,8 @@ def load_system_message():
 
 
 def main():
+    # Use streaming to print the response
+    use_streaming = True
 
     # Initialize LangfuseConnector - it will be active if environment variables are set
     # if you don't want to use Langfuse, just comment out the following line
@@ -64,17 +66,17 @@ def main():
 
     # Create the agent with all tools and system message
 
-    # llm = AmazonBedrockChatGenerator(model="anthropic.claude-3-5-sonnet-20240620-v1:0")
-    llm = OpenAIChatGenerator(model="gpt-4.1")
+    llm = AmazonBedrockChatGenerator(model="anthropic.claude-3-5-sonnet-20240620-v1:0")
+    # llm = OpenAIChatGenerator(model="gpt-4.1")
     agent = Agent(
         system_prompt=load_system_message(),
         chat_generator=llm,
         tools=all_tools,
-        streaming_callback=print_streaming_chunk,
+        streaming_callback=print_streaming_chunk if use_streaming else None,
     )
 
     # Example query for creating a personalized itinerary
-    agent.run(
+    response = agent.run(
         messages=[
             ChatMessage.from_user(
                 text="""
@@ -86,7 +88,8 @@ def main():
             )
         ]
     )
-
+    if not use_streaming:
+        print(response["messages"][-1].text)
 
 if __name__ == "__main__":
     main()
