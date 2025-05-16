@@ -52,3 +52,14 @@ services:
     environment:
       - GOOGLE_API_KEY=${GOOGLE_MAPS_API_KEY}
       - MCP_TRANSPORT=sse
+        
+  perplexity:
+    image: supercorp/supergateway
+    ports: ["8105:8105"]
+    environment:
+      - PERPLEXITY_API_KEY=${PERPLEXITY_API_KEY}
+    entrypoint: /bin/sh -c
+    command: >
+      'test -z "$PERPLEXITY_API_KEY" &&
+         { echo "❌ PERPLEXITY_API_KEY missing"; exit 1; };
+       exec supergateway --stdio "npx -y server-perplexity-ask" --port 8105'
