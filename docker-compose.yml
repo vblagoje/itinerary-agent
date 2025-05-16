@@ -46,3 +46,9 @@ services:
       'test -z "$BRAVE_API_KEY" &&
          { echo "❌ BRAVE_API_KEY missing"; exit 1; };
        exec supergateway --stdio "npx -y @modelcontextprotocol/server-brave-search" --port 8103'
+  optimal-route:
+    image: vblagoje/optimal-route
+    ports: ["8104:8080"]
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - MCP_TRANSPORT=sse
