@@ -84,6 +84,11 @@ python itinerary_agent.py
 
 The script contains an example query for planning a multi-day trip in the south of France. You can modify this query directly within the `itinerary_agent.py` file to plan different trips. The macro agent will interact with the running MCP services and utilize the day itinerary agent as needed to generate detailed plans. Results are streamed to your terminal.
 
+## Example Run
+
+You can view an example of the agent's execution with full tracing in Langfuse:
+[South of France 10-day Itinerary Trace](https://us.cloud.langfuse.com/project/cm9inpne801ruad07ci8vevid/traces/68546d29-d41b-429f-8c27-ca5ecf273391?timestamp=2025-05-22T08:30:02.403Z&display=timeline)
+
 ## How it Works
 
 *   `itinerary_agent.py`: Contains the Haystack Agent logic for both macro and day itinerary agents, tool definitions, and system prompt loading.
