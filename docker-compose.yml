@@ -10,17 +10,6 @@ services:
          { echo "❌ GOOGLE_MAPS_API_KEY missing"; exit 1; };
        exec supergateway --stdio "npx -y @modelcontextprotocol/server-google-maps" --port 8100'
 
-  openweather:
-    image: supercorp/supergateway
-    ports: ["8101:8101"]
-    environment:
-      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
-    entrypoint: /bin/sh -c
-    command: >
-      'test -z "$OPENWEATHER_API_KEY" &&
-         { echo "❌ OPENWEATHER_API_KEY missing"; exit 1; };
-       exec supergateway --stdio "npx -y @vblagoje/openweather-mcp" --port 8101'
-
   mcp-server-qdrant:
     image: mcp-server-qdrant
     ports: ["8102:8000"]      
@@ -35,17 +24,7 @@ services:
           echo "❌ QDRANT_URL and/or QDRANT_API_KEY missing"; exit 1;
        fi;
        exec mcp-server-qdrant --transport sse'
-
-  brave-search:
-    image: supercorp/supergateway
-    ports: ["8103:8103"]
-    environment:
-      - BRAVE_API_KEY=${BRAVE_API_KEY}
-    entrypoint: /bin/sh -c
-    command: >
-      'test -z "$BRAVE_API_KEY" &&
-         { echo "❌ BRAVE_API_KEY missing"; exit 1; };
-       exec supergateway --stdio "npx -y @modelcontextprotocol/server-brave-search" --port 8103'
+  
   optimal-route:
     image: vblagoje/optimal-route
     ports: ["8104:8080"]

@@ -1,11 +1,17 @@
 # Personalized Itinerary Agent with Haystack & MCP
 
-This project demonstrates a personalized travel itinerary agent built using [Haystack](https://haystack.deepset.ai/) and the [Model Context Protocol (MCP)](https://modelcontextprotocol.com/). The agent leverages multiple MCP servers (managed via `docker-compose`) to create detailed day plans based on user preferences and real-time data.
+This project demonstrates a personalized travel itinerary agent built using [Haystack](https://haystack.deepset.ai/) and the [Model Context Protocol (MCP)](https://modelcontextprotocol.com/). The system uses a two-tier agent architecture:
+
+1. **Macro Itinerary Planning Agent**: Plans the overall trip, determining major stops and routing across multiple days
+2. **Daily Itinerary Planning Agent**: Handles detailed day-by-day planning (invoked as a tool by the Macro Agent)
+
+The agents leverage multiple MCP servers (managed via `docker-compose`) to create detailed itineraries based on user preferences and real-time data.
 
 **Features:**
 
+*   **Hierarchical Planning:** Macro agent plans the overall trip, while day agent handles detailed daily itineraries.
 *   **Personalization:** Uses preferences stored in Qdrant to tailor suggestions.
-*   **Real-time Data:** Integrates Google Maps, OpenWeatherMap, and Brave Search via MCP servers.
+*   **Real-time Data:** Integrates Google Maps, Perplexity, and optimal route calculation via MCP servers.
 *   **Extensible:** Easily add more tools or change the LLM.
 *   **Traceable:** Optional integration with Langfuse for monitoring and debugging.
 
@@ -38,9 +44,8 @@ This project demonstrates a personalized travel itinerary agent built using [Hay
     Create a file named `.env` in the project root directory (alongside `docker-compose.yml`) and add the following variables with your keys. Alternatively, export these variables in your shell environment.
 
     **Required:**
-    *   `GOOGLE_MAPS_API_KEY`: Your Google Maps API key. Get one from [Google Cloud Console](https://console.cloud.google.com/google/maps-apis/overview). Enable "Geocoding API", "Places API", and "Directions API".
-    *   `OPENWEATHER_API_KEY`: Your OpenWeatherMap API key. Get one from [OpenWeatherMap](https://openweathermap.org/appid).
-    *   `BRAVE_API_KEY`: Your Brave Search API key. Get one from [Brave Search API](https://brave.com/search/api/).
+    *   `GOOGLE_MAPS_API_KEY`: Your Google Maps API key. Get one from [Google Cloud Console](https://console.cloud.google.com/google/maps-apis/overview). Enable "Geocoding API", "Places API", and "Directions API". This key is also used by the optimal route calculation service.
+    *   `PERPLEXITY_API_KEY`: Your Perplexity API key. Get one from [Perplexity API](https://docs.perplexity.ai/).
     *   `OPENAI_API_KEY`: Your OpenAI API key (if using `OpenAIChatGenerator` in `itinerary_agent.py`). Get one from [OpenAI Platform](https://platform.openai.com/api-keys).
         *   *Note:* If you modify `itinerary_agent.py` to use `AmazonBedrockChatGenerator`, ensure your AWS credentials are configured instead (e.g., via `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`).
 
@@ -58,7 +63,7 @@ This project demonstrates a personalized travel itinerary agent built using [Hay
     ```bash
     docker-compose up
     ```
-    This starts the Google Maps, Weather, Qdrant, and Brave Search MCP servers defined in `docker-compose.yml`.
+    This starts the Google Maps, Qdrant, Perplexity, and optimal route calculation (vblagoje/optimal-route) MCP servers defined in `docker-compose.yml`.
 
 5.  **Populate User Preferences (One-time Setup):**
     For personalized results, store your preferences in the Qdrant database:
@@ -77,12 +82,13 @@ Once the services are running and preferences are stored (optional but recommend
 python itinerary_agent.py
 ```
 
-The script contains an example query (e.g., planning a day in Munich). You can modify this query directly within the `itinerary_agent.py` file to ask for different itineraries. The agent will interact with the running MCP services and the configured LLM to generate and stream the response to your terminal.
+The script contains an example query for planning a multi-day trip in the south of France. You can modify this query directly within the `itinerary_agent.py` file to plan different trips. The macro agent will interact with the running MCP services and utilize the day itinerary agent as needed to generate detailed plans. Results are streamed to your terminal.
 
 ## How it Works
 
-*   `itinerary_agent.py`: Contains the main Haystack Agent logic, tool definitions, and system prompt loading.
-*   `docker-compose.yml`: Defines the MCP services (Google Maps, Weather, Qdrant, Brave Search) and their configurations.
+*   `itinerary_agent.py`: Contains the Haystack Agent logic for both macro and day itinerary agents, tool definitions, and system prompt loading.
+*   `docker-compose.yml`: Defines the MCP services (Google Maps, Qdrant, Perplexity, and optimal route calculation) and their configurations.
 *   `requirements.txt`: Lists the required Python packages.
 *   `.env` (you create this): Stores the necessary API keys.
-*   `system_prompt.txt`: Contains the instructions guiding the LLM's behavior as the itinerary agent. 
+*   `macro_itinerary_system_prompt.txt`: Contains the instructions guiding the LLM's behavior as the macro itinerary agent.
+*   `day_itinerary_system_prompt.txt`: Contains the instructions for the day-by-day planning agent.
