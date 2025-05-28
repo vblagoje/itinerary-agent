@@ -2,3 +2,4 @@ haystack-ai
 mcp-haystack
 amazon-bedrock-haystack
 langfuse-haystack
+questionary

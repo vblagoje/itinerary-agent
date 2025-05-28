@@ -4,14 +4,16 @@ This project demonstrates a personalized travel itinerary agent built using [Hay
 
 1. **Macro Itinerary Planning Agent**: Plans the overall trip, determining major stops and routing across multiple days
 2. **Daily Itinerary Planning Agent**: Handles detailed day-by-day planning (invoked as a tool by the Macro Agent)
+3. **Objective Clarifier Agent**: Interactively gathers user preferences, constraints, and requirements
 
 The agents leverage multiple MCP servers (managed via `docker-compose`) to create detailed itineraries based on user preferences and real-time data.
 
 **Features:**
 
 *   **Hierarchical Planning:** Macro agent plans the overall trip, while day agent handles detailed daily itineraries.
-*   **Personalization:** Uses preferences stored in Qdrant to tailor suggestions.
+*   **Interactive Preference Gathering:** Uses an objective clarifier agent to gather user preferences through conversational interaction.
 *   **Real-time Data:** Integrates Google Maps, Perplexity, and optimal route calculation via MCP servers.
+*   **User-friendly Input:** Interactive questionary prompts for easy user interaction.
 *   **Extensible:** Easily add more tools or change the LLM.
 *   **Traceable:** Optional integration with Langfuse for monitoring and debugging.
 
@@ -56,33 +58,22 @@ The agents leverage multiple MCP servers (managed via `docker-compose`) to creat
     *   `HAYSTACK_CONTENT_TRACING_ENABLED=true`: Enables detailed Haystack tracing.
         Get keys and host from your [Langfuse](https://langfuse.com/) project settings.
 
-    *(Note: The default `docker-compose.yml` runs a local Qdrant instance, so `QDRANT_URL` and `QDRANT_API_KEY` are typically not needed unless you modify the setup to use a cloud instance.)*
-
 4.  **Start MCP Services:**
     Run the following command from the project root:
     ```bash
     docker-compose up
     ```
-    This starts the Google Maps, Qdrant, Perplexity, and optimal route calculation (vblagoje/optimal-route) MCP servers defined in `docker-compose.yml`.
-
-5.  **Populate User Preferences (One-time Setup):**
-    For personalized results, store your preferences in the Qdrant database:
-    *   **Generate:** Create a text description of your travel style, likes, dislikes, food preferences, budget, etc.
-        *Example:* "Loves local cafes with good espresso, enjoys art galleries and walking tours. Mid-range budget. Prefers Italian or Thai food. Not interested in nightlife."
-    *   **Store:** Use an MCP client tool (like the [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector), Cursor, or another tool) connected to the Qdrant MCP server (running at `http://localhost:8102` by default).
-        *   Invoke the `qdrant-store` tool.
-        *   Paste your preferences text into the `information` field.
-        *   Execute the call.
+    This starts the Google Maps, Perplexity, and optimal route calculation (vblagoje/optimal-route) MCP servers defined in `docker-compose.yml`.
 
 ## Running the Agent
 
-Once the services are running and preferences are stored (optional but recommended), execute the Python script:
+Once the services are running, execute the Python script:
 
 ```bash
 python itinerary_agent.py
 ```
 
-The script contains an example query for planning a multi-day trip in the south of France. You can modify this query directly within the `itinerary_agent.py` file to plan different trips. The macro agent will interact with the running MCP services and utilize the day itinerary agent as needed to generate detailed plans. Results are streamed to your terminal.
+The script will prompt you interactively for your travel requirements using questionary. The system includes an objective clarifier agent that will gather detailed preferences, constraints, and requirements through conversational interaction. The macro agent will then interact with the running MCP services and utilize the day itinerary agent as needed to generate detailed plans. Results are streamed to your terminal.
 
 ## Example Run
 
@@ -91,9 +82,11 @@ You can view an example of the agent's execution with full tracing in Langfuse:
 
 ## How it Works
 
-*   `itinerary_agent.py`: Contains the Haystack Agent logic for both macro and day itinerary agents, tool definitions, and system prompt loading.
-*   `docker-compose.yml`: Defines the MCP services (Google Maps, Qdrant, Perplexity, and optimal route calculation) and their configurations.
-*   `requirements.txt`: Lists the required Python packages.
+*   `itinerary_agent.py`: Contains the Haystack Agent logic for macro, day itinerary, and objective clarifier agents, tool definitions, and system prompt loading.
+*   `user_input_tooling.py`: Contains tools for human-in-the-loop interaction and agent handoff functionality.
+*   `docker-compose.yml`: Defines the MCP services (Google Maps, Perplexity, and optimal route calculation) and their configurations.
+*   `requirements.txt`: Lists the required Python packages including questionary for interactive prompts.
 *   `.env` (you create this): Stores the necessary API keys.
 *   `macro_itinerary_system_prompt.txt`: Contains the instructions guiding the LLM's behavior as the macro itinerary agent.
 *   `day_itinerary_system_prompt.txt`: Contains the instructions for the day-by-day planning agent.
+*   `objective_clarifier_system_prompt.txt`: Contains the instructions for the objective clarifier agent that gathers user preferences.

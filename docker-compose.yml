@@ -9,21 +9,6 @@ services:
       'test -z "$GOOGLE_MAPS_API_KEY" &&
          { echo "❌ GOOGLE_MAPS_API_KEY missing"; exit 1; };
        exec supergateway --stdio "npx -y @modelcontextprotocol/server-google-maps" --port 8100'
-
-  mcp-server-qdrant:
-    image: mcp-server-qdrant
-    ports: ["8102:8000"]      
-    environment:
-      - QDRANT_URL=${QDRANT_URL}
-      - QDRANT_API_KEY=${QDRANT_API_KEY}
-      - COLLECTION_NAME=user-preferences
-      - TOOL_FIND_DESCRIPTION=Search for user's stored preferences and personal information including food preferences, favorite activities, travel style, dietary restrictions, and general likes/dislikes
-    entrypoint: /bin/sh -c
-    command: >
-      'if [ -z "$QDRANT_URL" ] || [ -z "$QDRANT_API_KEY" ]; then
-          echo "❌ QDRANT_URL and/or QDRANT_API_KEY missing"; exit 1;
-       fi;
-       exec mcp-server-qdrant --transport sse'
   
   optimal-route:
     image: vblagoje/optimal-route
