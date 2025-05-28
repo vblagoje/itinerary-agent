@@ -72,7 +72,7 @@ Once the services are running, execute the Python script:
 python itinerary_agent.py
 ```
 
-The script will prompt you interactively for your travel requirements using questionary. The system includes an objective clarifier agent that will gather detailed preferences, constraints, and requirements through conversational interaction. The macro agent will then interact with the running MCP services and utilize the day itinerary agent as needed to generate detailed plans. Results are streamed to your terminal.
+The script will prompt you interactively for your travel requirements using `questionary`. The system includes an objective clarifier agent that will gather detailed preferences, constraints, and requirements through conversational interaction. The macro agent will then interact with the running MCP services and utilize the day itinerary agent as needed to generate detailed plans. Results are streamed to your terminal.
 
 ## Example Run
 
