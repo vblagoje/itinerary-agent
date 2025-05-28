@@ -84,7 +84,7 @@ You can view an example of the agent's execution with full tracing in Langfuse:
 *   `itinerary_agent.py`: Contains the Haystack Agent logic for macro, day itinerary, and objective clarifier agents, tool definitions, and system prompt loading.
 *   `user_input_tooling.py`: Contains tools for human-in-the-loop interaction and agent handoff functionality.
 *   `docker-compose.yml`: Defines the MCP services (Google Maps, Perplexity, and optimal route calculation) and their configurations.
-*   `requirements.txt`: Lists the required Python packages including questionary for interactive prompts.
+*   `requirements.txt`: Lists the required Python packages including `questionary` for interactive prompts.
 *   `.env` (you create this): Stores the necessary API keys.
 *   `macro_itinerary_system_prompt.txt`: Contains the instructions guiding the LLM's behavior as the macro itinerary agent.
 *   `day_itinerary_system_prompt.txt`: Contains the instructions for the day-by-day planning agent.
