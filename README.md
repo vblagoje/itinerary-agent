@@ -13,7 +13,6 @@ The agents leverage multiple MCP servers (managed via `docker-compose`) to creat
 *   **Hierarchical Planning:** Macro agent plans the overall trip, while day agent handles detailed daily itineraries.
 *   **Interactive Preference Gathering:** Uses an objective clarifier agent to gather user preferences through conversational interaction.
 *   **Real-time Data:** Integrates Google Maps, Perplexity, and optimal route calculation via MCP servers.
-*   **User-friendly Input:** Interactive questionary prompts for easy user interaction.
 *   **Extensible:** Easily add more tools or change the LLM.
 *   **Traceable:** Optional integration with Langfuse for monitoring and debugging.
 
