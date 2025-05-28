@@ -115,8 +115,7 @@ def main():
     try:
         # Get user input interactively
         user_input = questionary.text(
-            "What kind of itinerary would you like me to create for you?",
-            default="For example: A 4-day trip in the south of France."
+            "What kind of itinerary would you like me to create for you? For example: A 4-day trip in the south of France."
         ).ask()
         
         if not user_input:
