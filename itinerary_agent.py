@@ -67,9 +67,10 @@ def main():
 
     perplexity_toolset = MCPToolset(
         SSEServerInfo(
-            url="http://localhost:8105/sse", timeout=90
-        ),  # seconds, as perplexity takes time to respond
+            url="http://localhost:8105/sse"
+        ),
         tool_names=["perplexity_ask"],
+        invocation_timeout=120, # seconds, as perplexity takes time to respond
     )
 
     # Combine all tools
