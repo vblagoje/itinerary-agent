@@ -33,8 +33,12 @@ def parse_input(text: str) -> List[str]:
 
 
 @tool
-def human_in_loop_tool(questions: Annotated[Union[str, dict, list], "JSON string or dict with 'questions' array"]) -> str:
-    """Ask the questions and return answers as plain text."""
+def human_in_loop_tool(
+    questions: Annotated[
+        Union[str, dict, list], "JSON string or dict with 'questions' array"
+    ],
+) -> str:
+    """Asks the clarification questions and return input answers from the user as plain text."""
     # Handle different input types
     if isinstance(questions, str):
         questions_list = parse_input(questions)
@@ -47,7 +51,9 @@ def human_in_loop_tool(questions: Annotated[Union[str, dict, list], "JSON string
         questions_list = questions
 
     if not questions_list:
-        raise ValueError(f"No questions found in input {questions} of type {type(questions)}")
+        raise ValueError(
+            f"No questions found in input {questions} of type {type(questions)}"
+        )
 
     answers = [f"{q}\n{questionary.text(q).ask()}\n" for q in questions_list]
     return "".join(answers).strip()
