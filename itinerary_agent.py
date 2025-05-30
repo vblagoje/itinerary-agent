@@ -31,12 +31,28 @@ def load_day_itinerary_system_message():
     with open(system_file, encoding="utf-8") as f:
         return f.read()
 
-def load_objective_clarifier_system_message():
-    """Load the system message from the external file."""
+def load_objective_clarifier_system_message(questioning_mode: str = "normal"):
+    """Load the system message from the external file and inject questioning mode."""
     current_dir = pathlib.Path(__file__).parent
     system_file = current_dir / "objective_clarifier_system_prompt.txt"
     with open(system_file, encoding="utf-8") as f:
-        return f.read()
+        system_prompt_template = f.read()
+
+    # Define questioning mode instructions
+    mode_instructions = {
+        "minimal": "**QUESTIONING MODE: MINIMAL** - Ask only one batch of most essential questions. Focus on core goal and basic context. Do not explore preferences or edge cases unless volunteered. Limit yourself to 3 questions maximum.",
+        "normal": "**QUESTIONING MODE: NORMAL** - Default mode. Ask two batches of questions maximum - strategically covering objective, context, preferences, and relevant constraints.",
+        "deep": "**QUESTIONING MODE: DEEP** - Be thorough. Ask detailed and specific questions about motivations, constraints, edge cases, and subjective preferences. Prioritize clarity and completeness. You may ask up to 10 questions if needed."
+    }
+    # Get the instruction for the current mode
+    questioning_mode_instructions = mode_instructions.get(questioning_mode, "normal")
+
+    # Format the template with the questioning mode instructions
+    system_prompt = system_prompt_template.format(
+        questioning_mode_instructions=questioning_mode_instructions
+    )
+
+    return system_prompt
 
 def load_macro_itinerary_system_message():
     """Load the system message from the external file."""
