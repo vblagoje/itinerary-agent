@@ -3,3 +3,4 @@ mcp-haystack
 amazon-bedrock-haystack
 langfuse-haystack
 questionary
+json5

@@ -16,6 +16,7 @@ from haystack.tools import ComponentTool
 from haystack_integrations.components.connectors.langfuse.langfuse_connector import (
     LangfuseConnector,
 )
+from haystack_integrations.components.generators.amazon_bedrock import AmazonBedrockChatGenerator
 
 from haystack_integrations.tools.mcp.mcp_tool import SSEServerInfo
 from haystack_integrations.tools.mcp.mcp_toolset import MCPToolset
@@ -51,7 +52,8 @@ def main():
 
     # Initialize LangfuseConnector - it will be active if environment variables are set
     # if you don't want to use Langfuse, just comment out the following line
-    tracer = LangfuseConnector("Agent itinerary")
+    # Uncomment this line below to use Langfuse tracing
+    #tracer = LangfuseConnector("Agent itinerary")
 
     maps_toolset = MCPToolset(
         SSEServerInfo(url="http://localhost:8100/sse"),
