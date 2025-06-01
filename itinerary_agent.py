@@ -78,7 +78,7 @@ def main():
 
     routing_toolset = MCPToolset(
         SSEServerInfo(url="http://localhost:8104/sse"),
-        tool_names=["compute_optimal_route"],
+        tool_names=["compute_optimal_route", "get_distance_direction"],
     )
 
     perplexity_toolset = MCPToolset(
