@@ -105,7 +105,7 @@ def main():
 
     day_tool = ComponentTool(
         name="daily_itinerary_planning_agent",
-        description="Daily Itinerary Planning Agent (DIPA) - creates detailed single-day itineraries based on macro itinerary locations",
+        description="Plans a detailed one-day itinerary. Input: 'Plan detailed day [X] from [location] to [destination], with activities focused on [preferences], ending at [accommodation].' Call this tool separately per day.",
         component=day_itinerary_agent,
     )
 
