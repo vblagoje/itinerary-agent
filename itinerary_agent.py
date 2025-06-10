@@ -31,6 +31,13 @@ def load_day_itinerary_system_message():
     with open(system_file, encoding="utf-8") as f:
         return f.read()
 
+def load_lodging_itinerary_system_message():
+    """Load the lodging itinerary system message from the external file."""
+    current_dir = pathlib.Path(__file__).parent
+    system_file = current_dir / "lodging_itinerary_system_prompt.txt"
+    with open(system_file, encoding="utf-8") as f:
+        return f.read()
+
 def load_objective_clarifier_system_message(questioning_mode: str = "normal"):
     """Load the system message from the external file and inject questioning mode."""
     current_dir = pathlib.Path(__file__).parent
@@ -105,8 +112,21 @@ def main():
 
     day_tool = ComponentTool(
         name="daily_itinerary_planning_agent",
-        description="Plans a detailed one-day itinerary. Input: 'Plan detailed day [X] from [location] to [destination], with activities focused on [preferences], ending at [accommodation].' Call this tool separately per day.",
+        description="Plans a detailed one-day itinerary. Input: 'Plan detailed day [X] for [location(s)], with activities drawn from [preferences], and stay at[accommodation].' Call this tool separately per day.",
         component=day_itinerary_agent,
+    )
+
+    lodging_itinerary_agent = Agent(
+        system_prompt=load_lodging_itinerary_system_message(),
+        chat_generator=llm,
+        tools=all_tools,
+        streaming_callback=print_streaming_chunk if use_streaming else None,
+    )
+
+    lodging_tool = ComponentTool(
+        name="accommodation_strategy_optimizer",
+        description="Determines optimal accommodation placement for multi-day travel itineraries. Input: 'Optimize accommodation strategy for [X]-day route: [destination sequence], transportation: [mode], lodging preferences: [preferences and budget].'",
+        component=lodging_itinerary_agent,
     )
 
     objective_clarifier_agent = Agent(
@@ -127,7 +147,7 @@ def main():
     macro_itinerary_agent = Agent(
         system_prompt=load_macro_itinerary_system_message(),
         chat_generator=llm,
-        tools=all_tools + [day_tool, objective_clarifier_tool],
+        tools=all_tools + [day_tool, lodging_tool, objective_clarifier_tool],
         streaming_callback=print_streaming_chunk if use_streaming else None,
     )
 
