@@ -114,6 +114,8 @@ def main():
         name="daily_itinerary_planning_agent",
         description="Plans a detailed one-day itinerary. Input: 'Plan detailed day [X] for [location(s)], with activities drawn from [preferences], and stay at[accommodation].' Call this tool separately per day.",
         component=day_itinerary_agent,
+        # We only care about the last message from the day itinerary agent (the day itinerary), not the intermediate tool calls history
+        outputs_to_string={"source": "last_message"}
     )
 
     lodging_itinerary_agent = Agent(
@@ -127,6 +129,8 @@ def main():
         name="accommodation_strategy_optimizer",
         description="Determines optimal accommodation placement for multi-day travel itineraries. Input: 'Optimize accommodation strategy for [X]-day route: [destination sequence], transportation: [mode], lodging preferences: [preferences and budget].'",
         component=lodging_itinerary_agent,
+        # We only care about the last message from the lodging itinerary agent (the lodging itinerary), not the intermediate tool calls history
+        outputs_to_string={"source": "last_message"}
     )
 
     objective_clarifier_agent = Agent(
@@ -140,7 +144,9 @@ def main():
     objective_clarifier_tool = ComponentTool(
         component=objective_clarifier_agent,
         description="Use this tool to clarify user's objective and constraints of user's intention",
-        name="travel_objective_clarifier_tool"
+        name="travel_objective_clarifier_tool",
+        # We only care about the last message from the objective clarifier agent (the objective, constraints, preferences), not the intermediate tool calls history
+        outputs_to_string={"source": "last_message"}
     )
 
 
