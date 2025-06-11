@@ -3,16 +3,16 @@
 This project demonstrates a personalized travel itinerary agent built using [Haystack](https://haystack.deepset.ai/) and the [Model Context Protocol (MCP)](https://modelcontextprotocol.com/). The system uses a multi-tier agent architecture:
 
 1. **Macro Itinerary Planning Agent**: Plans the overall trip, determining major stops and routing across multiple days
-2. **Accommodation Strategy Optimizer**: Determines optimal lodging placement and assigns specific daily targets/themes to prevent activity repetition
-3. **Daily Itinerary Planning Agent**: Handles detailed day-by-day planning with accommodation context and themed focus (invoked as a tool by the Macro Agent)
+2. **Lodging Agent**: Determines optimal lodging selection taking into account preferences and overal itinerary dynamics
+3. **Daily Itinerary Planning Agent**: Handles detailed day-by-day planning with lodging context and themed focus (invoked as a tool by the Macro Agent)
 4. **Objective Clarifier Agent**: Interactively gathers user preferences, constraints, and requirements
 
 The agents leverage multiple MCP servers (managed via `docker-compose`) to create detailed itineraries based on user preferences and real-time data.
 
 **Features:**
 
-*   **Hierarchical Planning:** Macro agent plans the overall trip, accommodation optimizer strategically places lodging and assigns daily themes, while day agent handles detailed daily itineraries.
-*   **Strategic Accommodation Placement:** Optimizes lodging locations based on daily activities and assigns unique themes to each day to prevent repetitive experiences.
+*   **Hierarchical Planning:** Macro agent plans the overall trip, lodging agent strategically places lodging and assigns daily themes, while day agent handles detailed daily itineraries.
+*   **Strategic Lodging:** Optimizes lodging locations based on preferences and overall itinerary dynamics. 
 *   **Interactive Preference Gathering:** Uses an objective clarifier agent to gather user preferences through conversational interaction.
 *   **Real-time Data:** Integrates Google Maps, Perplexity, and optimal route calculation via MCP servers.
 *   **Extensible:** Easily add more tools or change the LLM.
@@ -83,12 +83,12 @@ You can view an example of the agent's execution with full tracing in Langfuse:
 
 ## How it Works
 
-*   `itinerary_agent.py`: Contains the Haystack Agent logic for macro, accommodation strategy, day itinerary, and objective clarifier agents, tool definitions, and system prompt loading.
+*   `itinerary_agent.py`: Contains the Haystack Agent logic for macro, lodging strategy, day itinerary, and objective clarifier agents, tool definitions, and system prompt loading.
 *   `user_input_tooling.py`: Contains tools for human-in-the-loop interaction and agent handoff functionality.
 *   `docker-compose.yml`: Defines the MCP services (Google Maps, Perplexity, and optimal route calculation) and their configurations.
 *   `requirements.txt`: Lists the required Python packages including `questionary` for interactive prompts.
 *   `.env` (you create this): Stores the necessary API keys.
 *   `macro_itinerary_system_prompt.txt`: Contains the instructions guiding the LLM's behavior as the macro itinerary agent.
-*   `lodging_itinerary_system_prompt.txt`: Contains the instructions for the accommodation strategy optimizer that determines lodging placement and daily themes.
+*   `lodging_itinerary_system_prompt.txt`: Contains the instructions for the lodging agent that determines lodging placement and daily themes.
 *   `day_itinerary_system_prompt.txt`: Contains the instructions for the day-by-day planning agent.
 *   `objective_clarifier_system_prompt.txt`: Contains the instructions for the objective clarifier agent that gathers user preferences.
